@@ -68,14 +68,14 @@ export async function setupSetting() {
         'CSS statements for highlight current line. Use `&` to represent the selector of highlight line. For example: `& {background: yellow}` will make highlight line yellow. Left empty to disable highlighting',
     },
     [ENABLE_SYNC_TO_CM]: {
-      label: 'Double click to Switch To Editor when in Editor-View Mode',
+      label: 'Double click to Switch To Editor when in Split View layout',
       type: SettingItemType.Bool,
       public: true,
       value: true,
       section: SECTION_NAME,
     },
     [BEHAVIOR_IN_VIEW_MODE]: {
-      label: 'What happen when double clicking In View Mode',
+      label: 'What happen when double clicking In Viewer layout',
       isEnum: true,
       options: {
         [Behaviors.None]: 'Nothing happens',
@@ -86,6 +86,8 @@ export async function setupSetting() {
       public: true,
       value: Behaviors.EditorView,
       section: SECTION_NAME,
+      description:
+        "If your layout button sequence doesn't include the layout, this option won't take effect",
     },
   });
 

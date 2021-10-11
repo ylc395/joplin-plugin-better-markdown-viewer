@@ -46,17 +46,27 @@ export default class Joplin {
 
   private async toggleEditorOut() {
     let layouts = await joplin.settings.globalValue('noteVisiblePanes');
+    let layoutsSeq = await joplin.settings.globalValue('layoutButtonSequence');
+
+    const isInViewMode = layouts.length === 1 && layouts[0] === 'viewer';
+
+    if (!isInViewMode) {
+      return;
+    }
 
     const canStopToggle = {
       [Behaviors.None]: () => true,
-      [Behaviors.Editor]: () => layouts.length === 1 && layouts[0] === 'editor',
-      [Behaviors.EditorView]: () => layouts.length === 2,
+      [Behaviors.Editor]: () =>
+        layoutsSeq === 3 || // @see https://github.com/laurent22/joplin/blob/cbfc646745f2774fbe89e30c8020cfe5e6465545/packages/lib/models/Setting.ts#L155
+        (layouts.length === 1 && layouts[0] === 'editor'),
+      [Behaviors.EditorView]: () =>
+        layoutsSeq === 1 || // @see https://github.com/laurent22/joplin/blob/cbfc646745f2774fbe89e30c8020cfe5e6465545/packages/lib/models/Setting.ts#L155
+        layouts.length === 2,
     }[this[BEHAVIOR_IN_VIEW_MODE]];
 
     while (!canStopToggle()) {
       await joplin.commands.execute('toggleVisiblePanes');
       layouts = await joplin.settings.globalValue('noteVisiblePanes');
-      console.log(layouts);
     }
   }
 
