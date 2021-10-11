@@ -12,6 +12,10 @@ class Cursor {
   private readonly doc = this.cm.getDoc();
   private queryTimer?: ReturnType<typeof setInterval>;
   trackCursorLine() {
+    if (this.queryTimer) {
+      return;
+    }
+
     this.queryTimer = setInterval(async () => {
       const _line = await this.context.postMessage<QueryCursorLineResponse>({
         event: 'queryCursorLine',
@@ -61,12 +65,11 @@ module.exports = {
       plugin: function (codemirror: typeof CodeMirror) {
         codemirror.defineOption('updateCurrentLine', false, (cm) => {
           const cursor = new Cursor(context, cm);
+          cursor.trackCursorLine();
 
           cm.on('focus', cursor.stopTrackCursorLine.bind(cursor));
-
           cm.on('blur', cursor.inactive.bind(cursor));
           cm.on('blur', cursor.trackCursorLine.bind(cursor));
-
           cm.on('cursorActivity', cursor.updateCursorLine.bind(cursor));
         });
       },

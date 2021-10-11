@@ -52,7 +52,6 @@ async function highlightLine() {
   }
 
   if (!lineNum) {
-    clearHighlight();
     return;
   }
 
