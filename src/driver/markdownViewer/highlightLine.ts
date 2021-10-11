@@ -1,12 +1,9 @@
 import { MARKDOWN_SCRIPT_ID } from '../constants';
-import type { MarkdownViewerRequest } from './type';
+import type { QueryCursorLineRequest, QueryCursorLineResponse } from './type';
 
 const LINE_CLASS = 'better-markdown-viewer-highlight-line';
 declare const webviewApi: {
-  postMessage: (
-    id: string,
-    payload: MarkdownViewerRequest,
-  ) => Promise<{ line: number | null; lineStyle: string }>;
+  postMessage: (id: string, payload: QueryCursorLineRequest) => Promise<QueryCursorLineResponse>;
 };
 
 const styleEl = document.createElement('style');

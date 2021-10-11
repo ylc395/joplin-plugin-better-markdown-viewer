@@ -1,8 +1,11 @@
 import joplin from 'api';
 import { ContentScriptType, SettingItemType } from 'api/types';
 import { MARKDOWN_SCRIPT_ID, CODE_MIRROR_SCRIPT_ID, LINE_STYLE_SETTING } from '../constants';
-import type { MarkdownViewerRequest } from '../markdownViewer/type';
-import type { CodemirrorRequest } from '../codeMirror/type';
+import type {
+  Request as MarkdownViewerRequest,
+  QueryCursorLineResponse,
+} from '../markdownViewer/type';
+import type { Request as CodeMirrorRequest } from '../codeMirror/type';
 import data from './dataCenter';
 
 export async function setupMarkdownViewer() {
@@ -20,7 +23,10 @@ export async function setupMarkdownViewer() {
           return {
             line: data.currentLine,
             lineStyle: await joplin.settings.value(LINE_STYLE_SETTING),
-          };
+          } as QueryCursorLineResponse;
+        case 'updateCursorLine':
+          data.currentLine = request.payload;
+          return;
         default:
           break;
       }
@@ -35,11 +41,13 @@ export async function setupCodeMirror() {
     './driver/codeMirror/index.js',
   );
 
-  await joplin.contentScripts.onMessage(CODE_MIRROR_SCRIPT_ID, (request: CodemirrorRequest) => {
+  await joplin.contentScripts.onMessage(CODE_MIRROR_SCRIPT_ID, (request: CodeMirrorRequest) => {
     switch (request.event) {
       case 'updateCurrentLine':
         data.currentLine = request.payload;
         break;
+      case 'queryCursorLine':
+        return data.currentLine;
       default:
         break;
     }

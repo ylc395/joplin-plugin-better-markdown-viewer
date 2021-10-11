@@ -38,7 +38,7 @@ module.exports = {
     return {
       plugin: sourceMap,
       assets: function () {
-        return [{ name: 'highlightLine.js' }];
+        return [{ name: 'highlightLine.js' }, { name: 'syncCursor.js' }];
       },
     };
   },
