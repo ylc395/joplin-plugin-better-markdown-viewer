@@ -1,5 +1,4 @@
 import type CodeMirror from 'codemirror';
-import type { Editor } from 'codemirror';
 import { CodemirrorRequest } from './type';
 
 interface Context {
@@ -10,7 +9,7 @@ module.exports = {
   default: function (context: Context) {
     return {
       plugin: function (codemirror: typeof CodeMirror) {
-        codemirror.defineOption('updateCurrentLine', false, (cm: Editor) => {
+        codemirror.defineOption('updateCurrentLine', false, (cm) => {
           const doc = cm.getDoc();
 
           cm.on('blur', () => {

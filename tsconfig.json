@@ -8,6 +8,7 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "baseUrl": ".",
-    "strict": true
+    "strict": true,
+    "lib": ["ESNext", "DOM", "DOM.Iterable"]
   }
 }

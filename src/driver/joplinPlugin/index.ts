@@ -58,9 +58,11 @@ export async function setupSetting() {
       label: 'Highlight Current Line Style',
       type: SettingItemType.String,
       public: true,
-      value: 'background: red;',
+      value:
+        '& { position: relative; } &::before { position: absolute; background-color: rgba(255, 255, 255, 0.4); content: ""; height: 100%; width: 3px; left: -6px}',
       section: SECTION_NAME,
-      description: 'CSS statements for highlight current line. Left empty to disable highlighting',
+      description:
+        'CSS statements for highlight current line. Use `&` to represent the selector of highlight line. For example: `& {background: yellow}` will make highlight line yellow. Left empty to disable highlighting',
     },
   });
 }

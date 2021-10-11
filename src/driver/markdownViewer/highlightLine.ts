@@ -12,7 +12,7 @@ declare const webviewApi: {
 const styleEl = document.createElement('style');
 document.head.appendChild(styleEl);
 function refreshLineStyle(style: string) {
-  styleEl.innerHTML = `.${LINE_CLASS} { ${style} }`;
+  styleEl.textContent = style.replaceAll('&', `.${LINE_CLASS}`);
 }
 
 function getLineEl(line: number) {
