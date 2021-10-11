@@ -4,13 +4,19 @@ import joplin from 'api';
 
 export const HIGHLIGHT_LINE_STYLE = 'highlightLineStyle';
 export const ENABLE_SYNC_TO_CM = 'enableSyncToCM';
-export const TO_OPEN_EDITOR = 'toOpenEditor';
+export const BEHAVIOR_IN_VIEW_MODE = 'behaviorInViewMode';
+
+export enum Behaviors {
+  None,
+  Editor,
+  EditorView,
+}
 
 export default class Joplin {
   currentLine: number | null = null;
   private [HIGHLIGHT_LINE_STYLE] = '';
   private [ENABLE_SYNC_TO_CM] = true;
-  private [TO_OPEN_EDITOR] = true;
+  private [BEHAVIOR_IN_VIEW_MODE]: Behaviors = Behaviors.None;
   update(key: string, value: any) {
     if (key in this) {
       this[key as keyof this] = value;
@@ -35,17 +41,22 @@ export default class Joplin {
 
     this.currentLine = line;
 
-    if (this[TO_OPEN_EDITOR]) {
-      await this.toggleEditorOut();
-    }
+    await this.toggleEditorOut();
   }
 
   private async toggleEditorOut() {
     let layouts = await joplin.settings.globalValue('noteVisiblePanes');
 
-    while (layouts.length !== 2) {
+    const canStopToggle = {
+      [Behaviors.None]: () => true,
+      [Behaviors.Editor]: () => layouts.length === 1 && layouts[0] === 'editor',
+      [Behaviors.EditorView]: () => layouts.length === 2,
+    }[this[BEHAVIOR_IN_VIEW_MODE]];
+
+    while (!canStopToggle()) {
       await joplin.commands.execute('toggleVisiblePanes');
       layouts = await joplin.settings.globalValue('noteVisiblePanes');
+      console.log(layouts);
     }
   }
 

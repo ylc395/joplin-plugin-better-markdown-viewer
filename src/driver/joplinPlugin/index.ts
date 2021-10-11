@@ -3,7 +3,12 @@ import { ContentScriptType, SettingItemType } from 'api/types';
 import { MARKDOWN_SCRIPT_ID, CODE_MIRROR_SCRIPT_ID } from '../constants';
 import type { Request as MarkdownViewerRequest } from '../markdownViewer/type';
 import type { Request as CodeMirrorRequest } from '../codeMirror/type';
-import Joplin, { HIGHLIGHT_LINE_STYLE, ENABLE_SYNC_TO_CM, TO_OPEN_EDITOR } from './Joplin';
+import Joplin, {
+  HIGHLIGHT_LINE_STYLE,
+  ENABLE_SYNC_TO_CM,
+  BEHAVIOR_IN_VIEW_MODE,
+  Behaviors,
+} from './Joplin';
 
 const app = new Joplin();
 
@@ -63,24 +68,30 @@ export async function setupSetting() {
         'CSS statements for highlight current line. Use `&` to represent the selector of highlight line. For example: `& {background: yellow}` will make highlight line yellow. Left empty to disable highlighting',
     },
     [ENABLE_SYNC_TO_CM]: {
-      label: 'Double click to Switch To Editor',
+      label: 'Double click to Switch To Editor when in Editor-View Mode',
       type: SettingItemType.Bool,
       public: true,
       value: true,
       section: SECTION_NAME,
     },
-    [TO_OPEN_EDITOR]: {
-      label: 'Double click will toggle editor out when in View Mode',
-      type: SettingItemType.Bool,
+    [BEHAVIOR_IN_VIEW_MODE]: {
+      label: 'What happen when double clicking In View Mode',
+      isEnum: true,
+      options: {
+        [Behaviors.None]: 'Nothing happens',
+        [Behaviors.Editor]: 'Toggle out Editor',
+        [Behaviors.EditorView]: 'Toggle out Editor-View',
+      },
+      type: SettingItemType.Int,
       public: true,
-      value: true,
+      value: Behaviors.EditorView,
       section: SECTION_NAME,
     },
   });
 
   app.update(HIGHLIGHT_LINE_STYLE, await joplin.settings.value(HIGHLIGHT_LINE_STYLE));
   app.update(ENABLE_SYNC_TO_CM, await joplin.settings.value(ENABLE_SYNC_TO_CM));
-  app.update(TO_OPEN_EDITOR, await joplin.settings.value(TO_OPEN_EDITOR));
+  app.update(BEHAVIOR_IN_VIEW_MODE, await joplin.settings.value(BEHAVIOR_IN_VIEW_MODE));
 
   await joplin.settings.onChange(async ({ keys }) => {
     for (const key of keys) {
