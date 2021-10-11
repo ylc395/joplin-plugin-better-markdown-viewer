@@ -39,6 +39,7 @@ class Cursor {
   stopTrackCursorLine() {
     if (this.queryTimer) {
       clearInterval(this.queryTimer);
+      this.queryTimer = undefined;
     }
   }
 
