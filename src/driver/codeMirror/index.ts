@@ -11,32 +11,32 @@ class Cursor {
   private currentLine: number | null = null;
   private readonly doc = this.cm.getDoc();
   private queryTimer?: ReturnType<typeof setInterval>;
+
+  private async syncCursor() {
+    const line = await this.context.postMessage<QueryCursorLineResponse>({
+      event: 'queryCursorLine',
+    });
+
+    if (line === null || line === this.currentLine) {
+      return;
+    }
+
+    this.currentLine = line;
+    this.doc.setCursor({ line: line - 1, ch: 0 });
+    this.cm.focus();
+  }
+
   trackCursorLine() {
     if (this.queryTimer) {
       return;
     }
 
-    this.queryTimer = setInterval(async () => {
-      const _line = await this.context.postMessage<QueryCursorLineResponse>({
-        event: 'queryCursorLine',
-      });
-
-      if (_line === null) {
-        return;
-      }
-
-      const line = _line - 1;
-
-      if (line === this.currentLine) {
-        return;
-      }
-
-      this.doc.setCursor({ line, ch: 0 });
-      this.cm.focus();
-    }, 300);
+    this.queryTimer = setInterval(this.syncCursor.bind(this), 300);
   }
 
-  stopTrackCursorLine() {
+  active() {
+    this.syncCursor();
+
     if (this.queryTimer) {
       clearInterval(this.queryTimer);
       this.queryTimer = undefined;
@@ -46,7 +46,7 @@ class Cursor {
   updateCursorLine() {
     this.currentLine = this.doc.getCursor().line + 1;
     this.context.postMessage({
-      event: 'updateCurrentLine',
+      event: 'updateCursorLine',
       payload: this.currentLine,
     });
   }
@@ -54,7 +54,7 @@ class Cursor {
   inactive() {
     this.currentLine = null;
     this.context.postMessage({
-      event: 'updateCurrentLine',
+      event: 'updateCursorLine',
       payload: null,
     });
   }
@@ -68,7 +68,7 @@ module.exports = {
           const cursor = new Cursor(context, cm);
           cursor.trackCursorLine();
 
-          cm.on('focus', cursor.stopTrackCursorLine.bind(cursor));
+          cm.on('focus', cursor.active.bind(cursor));
           cm.on('blur', cursor.inactive.bind(cursor));
           cm.on('blur', cursor.trackCursorLine.bind(cursor));
           cm.on('cursorActivity', cursor.updateCursorLine.bind(cursor));

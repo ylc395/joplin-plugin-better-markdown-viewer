@@ -1,15 +1,11 @@
 import joplin from 'api';
 import { ContentScriptType, SettingItemType } from 'api/types';
 import { MARKDOWN_SCRIPT_ID, CODE_MIRROR_SCRIPT_ID } from '../constants';
-import type {
-  Request as MarkdownViewerRequest,
-  QueryCursorLineResponse as MDViewerQueryCursorLineResponse,
-} from '../markdownViewer/type';
-import type {
-  Request as CodeMirrorRequest,
-  QueryCursorLineResponse as CMQueryCursorLineResponse,
-} from '../codeMirror/type';
-import globalData, { HIGHLIGHT_LINE_STYLE, ENABLE_SYNC_TO_CM } from './globals';
+import type { Request as MarkdownViewerRequest } from '../markdownViewer/type';
+import type { Request as CodeMirrorRequest } from '../codeMirror/type';
+import Joplin, { HIGHLIGHT_LINE_STYLE, ENABLE_SYNC_TO_CM, TO_OPEN_EDITOR } from './Joplin';
+
+const app = new Joplin();
 
 export async function setupMarkdownViewer() {
   await joplin.contentScripts.register(
@@ -21,15 +17,9 @@ export async function setupMarkdownViewer() {
   await joplin.contentScripts.onMessage(MARKDOWN_SCRIPT_ID, (request: MarkdownViewerRequest) => {
     switch (request.event) {
       case 'queryCursorLine':
-        return {
-          line: globalData.currentLine,
-          lineStyle: globalData.highlightLineStyle,
-        } as MDViewerQueryCursorLineResponse;
+        return app.queryCursorLineForMD();
       case 'updateCursorLine':
-        if (globalData[ENABLE_SYNC_TO_CM]) {
-          globalData.currentLine = request.payload;
-        }
-        return;
+        return app.handleUpdateCursorLineForMD(request.payload);
       default:
         break;
     }
@@ -45,11 +35,10 @@ export async function setupCodeMirror() {
 
   await joplin.contentScripts.onMessage(CODE_MIRROR_SCRIPT_ID, (request: CodeMirrorRequest) => {
     switch (request.event) {
-      case 'updateCurrentLine':
-        globalData.currentLine = request.payload;
-        break;
+      case 'updateCursorLine':
+        return app.handleUpdateCursorLineForCM(request.payload);
       case 'queryCursorLine':
-        return globalData.currentLine as CMQueryCursorLineResponse;
+        return app.queryCursorLineForCM();
       default:
         break;
     }
@@ -80,14 +69,22 @@ export async function setupSetting() {
       value: true,
       section: SECTION_NAME,
     },
+    [TO_OPEN_EDITOR]: {
+      label: 'Double click will toggle editor out when in View Mode',
+      type: SettingItemType.Bool,
+      public: true,
+      value: true,
+      section: SECTION_NAME,
+    },
   });
 
-  globalData[HIGHLIGHT_LINE_STYLE] = await joplin.settings.value(HIGHLIGHT_LINE_STYLE);
-  globalData[ENABLE_SYNC_TO_CM] = await joplin.settings.value(ENABLE_SYNC_TO_CM);
+  app.update(HIGHLIGHT_LINE_STYLE, await joplin.settings.value(HIGHLIGHT_LINE_STYLE));
+  app.update(ENABLE_SYNC_TO_CM, await joplin.settings.value(ENABLE_SYNC_TO_CM));
+  app.update(TO_OPEN_EDITOR, await joplin.settings.value(TO_OPEN_EDITOR));
 
   await joplin.settings.onChange(async ({ keys }) => {
     for (const key of keys) {
-      globalData[key] = await joplin.settings.value(key);
+      app.update(key, await joplin.settings.value(key));
     }
   });
 }
