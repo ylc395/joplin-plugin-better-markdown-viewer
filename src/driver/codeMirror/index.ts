@@ -8,7 +8,7 @@ interface Context {
 
 class Cursor {
   constructor(private readonly context: Context, private readonly cm: Editor) {}
-  private currentLine?: number;
+  private currentLine: number | null = null;
   private readonly doc = this.cm.getDoc();
   private queryTimer?: ReturnType<typeof setInterval>;
   trackCursorLine() {
@@ -47,7 +47,7 @@ class Cursor {
   }
 
   inactive() {
-    this.currentLine = undefined;
+    this.currentLine = null;
     this.context.postMessage({
       event: 'updateCurrentLine',
       payload: null,
