@@ -1,0 +1,7 @@
+{
+  "extraScripts": [
+    "driver/markdownViewer/index.ts",
+    "driver/markdownViewer/highlightLine.ts",
+    "driver/codeMirror/index.ts"
+  ]
+}
