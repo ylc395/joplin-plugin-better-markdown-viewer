@@ -10,6 +10,7 @@
   "keywords": [
     "joplin-plugin"
   ],
+  "repository": "https://github.com/ylc395/joplin-plugin-better-markdown-viewer",
   "files": [
     "publish"
   ],
