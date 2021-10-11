@@ -27,3 +27,7 @@ You can also set the highlight style in Setting Panel. For example:
 ## Feature 2: Focus the same line in editor when double click MD Viewer
 
 ![](./doc/feature2-1.gif)
+
+When In View Mode:
+
+![](./doc/feature2-2.gif)
