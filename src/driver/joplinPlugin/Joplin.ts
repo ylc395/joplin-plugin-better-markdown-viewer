@@ -57,10 +57,10 @@ export default class Joplin {
     const canStopToggle = {
       [Behaviors.None]: () => true,
       [Behaviors.Editor]: () =>
-        layoutsSeq === 3 || // @see https://github.com/laurent22/joplin/blob/cbfc646745f2774fbe89e30c8020cfe5e6465545/packages/lib/models/Setting.ts#L155
+        (layoutsSeq === 3 && layouts.length === 2) || // @see https://github.com/laurent22/joplin/blob/cbfc646745f2774fbe89e30c8020cfe5e6465545/packages/lib/models/Setting.ts#L155
         (layouts.length === 1 && layouts[0] === 'editor'),
       [Behaviors.EditorView]: () =>
-        layoutsSeq === 1 || // @see https://github.com/laurent22/joplin/blob/cbfc646745f2774fbe89e30c8020cfe5e6465545/packages/lib/models/Setting.ts#L155
+        (layoutsSeq === 1 && layouts.length === 1 && layouts[0] === 'editor') || // @see https://github.com/laurent22/joplin/blob/cbfc646745f2774fbe89e30c8020cfe5e6465545/packages/lib/models/Setting.ts#L155
         layouts.length === 2,
     }[this[BEHAVIOR_IN_VIEW_MODE]];
 

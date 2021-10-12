@@ -75,7 +75,7 @@ export async function setupSetting() {
       section: SECTION_NAME,
     },
     [BEHAVIOR_IN_VIEW_MODE]: {
-      label: 'What happen when double clicking In Viewer layout',
+      label: 'What happen when double clicking In View layout',
       isEnum: true,
       options: {
         [Behaviors.None]: 'Nothing happens',
@@ -86,8 +86,7 @@ export async function setupSetting() {
       public: true,
       value: Behaviors.EditorView,
       section: SECTION_NAME,
-      description:
-        "If your layout button sequence doesn't include the layout, this option won't take effect",
+      description: 'Actual Effect depends on your layout button sequence setting',
     },
   });
 
