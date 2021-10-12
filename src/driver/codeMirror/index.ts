@@ -13,9 +13,13 @@ class Cursor {
   private queryTimer?: ReturnType<typeof setInterval>;
 
   private async syncCursor() {
-    const line = await this.context.postMessage<QueryCursorLineResponse>({
+    const { line, stopQuery } = await this.context.postMessage<QueryCursorLineResponse>({
       event: 'queryCursorLine',
     });
+
+    if (stopQuery) {
+      this.stopTrackCursorLine();
+    }
 
     if (line === null || line === this.currentLine) {
       return;
@@ -34,13 +38,16 @@ class Cursor {
     this.queryTimer = setInterval(this.syncCursor.bind(this), 300);
   }
 
-  active() {
-    this.syncCursor();
-
+  private stopTrackCursorLine() {
     if (this.queryTimer) {
       clearInterval(this.queryTimer);
       this.queryTimer = undefined;
     }
+  }
+
+  active() {
+    this.syncCursor();
+    this.stopTrackCursorLine();
   }
 
   updateCursorLine() {

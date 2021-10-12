@@ -69,4 +69,6 @@ async function highlightLine() {
   }
 }
 
+// in markdown view, there is no choice but to keep querying
+// because there is no chance to restart to query
 setInterval(highlightLine, 300);

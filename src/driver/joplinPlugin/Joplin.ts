@@ -30,8 +30,10 @@ export default class Joplin {
     };
   }
 
-  queryCursorLineForCM(): CMQueryCursorLineResponse {
-    return this.currentLine;
+  async queryCursorLineForCM(): Promise<CMQueryCursorLineResponse> {
+    const layouts = await joplin.settings.globalValue('noteVisiblePanes');
+
+    return { line: this.currentLine, stopQuery: layouts.length === 1 && layouts[0] === 'editor' };
   }
 
   async handleUpdateCursorLineForMD(line: number | null) {
