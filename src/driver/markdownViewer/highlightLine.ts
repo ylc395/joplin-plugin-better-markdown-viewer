@@ -30,25 +30,34 @@ function getLineEl(line: number) {
   return null;
 }
 
+let lastHighLightLine: null | number = null;
+let lastHighLightLineStyle: null | string = null;
+
 function clearHighlight() {
   const lines = document.querySelectorAll(`.${LINE_CLASS}`);
+  lastHighLightLine = null;
 
   for (const el of lines) {
     el.classList.remove(LINE_CLASS);
   }
 }
 
-let lastHighLightLine: null | number = null;
-let lastHighLightLineStyle: null | string = null;
-
 async function highlightLine() {
-  const { line: lineNum, lineStyle } = await webviewApi.postMessage(MARKDOWN_SCRIPT_ID, {
+  const {
+    line: lineNum,
+    lineStyle,
+    noHighlight,
+  } = await webviewApi.postMessage(MARKDOWN_SCRIPT_ID, {
     event: 'queryCursorLine',
   });
 
   if (lineStyle !== lastHighLightLineStyle) {
     lastHighLightLineStyle = lineStyle;
     refreshLineStyle(lineStyle);
+  }
+
+  if (noHighlight) {
+    clearHighlight();
   }
 
   if (!lineNum) {
@@ -64,8 +73,11 @@ async function highlightLine() {
 
   if (lineInfo.line !== lastHighLightLine) {
     clearHighlight();
-    lastHighLightLine = lineInfo.line;
-    lineInfo.el.classList.add(LINE_CLASS);
+
+    if (!noHighlight) {
+      lastHighLightLine = lineInfo.line;
+      lineInfo.el.classList.add(LINE_CLASS);
+    }
   }
 }
 

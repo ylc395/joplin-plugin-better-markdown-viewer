@@ -23,10 +23,13 @@ export default class Joplin {
     }
   }
 
-  queryCursorLineForMD(): MDViewerQueryCursorLineResponse {
+  async queryCursorLineForMD(): Promise<MDViewerQueryCursorLineResponse> {
+    const layouts = await joplin.settings.globalValue('noteVisiblePanes');
+
     return {
       line: this.currentLine,
       lineStyle: this.highlightLineStyle,
+      noHighlight: layouts.length === 1 && layouts[0] === 'viewer',
     };
   }
 

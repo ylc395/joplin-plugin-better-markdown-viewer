@@ -45,9 +45,10 @@ class Cursor {
     }
   }
 
-  active() {
-    this.syncCursor();
+  async active() {
     this.stopTrackCursorLine();
+    await this.syncCursor();
+    this.updateCursorLine();
   }
 
   updateCursorLine() {
