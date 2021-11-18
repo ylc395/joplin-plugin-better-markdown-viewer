@@ -1,7 +1,5 @@
 # Joplin Better Markdown Viewer
 
-All features can be enabled/disabled in Setting Panel.
-
 ## Feature 1: Mark the active line of editor in MD Viewer
 
 ![](./doc/feature1-1.gif)
