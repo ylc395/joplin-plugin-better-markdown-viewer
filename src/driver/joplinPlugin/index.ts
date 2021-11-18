@@ -9,15 +9,15 @@ import {
   SECTION_NAME,
 } from '../constants';
 import setting, { Behaviors } from './setting';
+import { nextAvailable } from 'node-port-check';
 import { OPEN, WebSocketServer } from 'ws';
 
 export default class App {
   private port = 3000;
 
-  private startWs() {
-    const wss = new WebSocketServer({
-      port: this.port,
-    });
+  private async startWs() {
+    this.port = await nextAvailable(this.port);
+    const wss = new WebSocketServer({ port: this.port });
 
     wss.on('connection', (ws) => {
       ws.on('message', (message) => {
@@ -33,8 +33,6 @@ export default class App {
         }
       });
     });
-
-    return new Promise((resolve) => wss.on('listening', resolve));
   }
 
   async init() {

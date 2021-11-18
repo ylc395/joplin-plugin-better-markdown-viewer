@@ -2099,6 +2099,11 @@ node-libs-browser@^2.2.1:
     util "^0.11.0"
     vm-browserify "^1.0.1"
 
+node-port-check@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/node-port-check/-/node-port-check-2.0.1.tgz#72cae367d3ca906b0903b261ce818c297aade11f"
+  integrity sha512-PV1tj5OPbWwxvhPcChXxwCIKl/IfVEdPP4u/gQz2lao/VGoeIUXb/4U72KSHLZpTVBmgTnMm0me7yR0wUsIuPg==
+
 normalize-path@^2.1.1:
   version "2.1.1"
   resolved "https://registry.npmjs.org/normalize-path/-/normalize-path-2.1.1.tgz#1ab28b556e198363a8c1a6f7e6fa20137fe6aed9"

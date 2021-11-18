@@ -33,6 +33,7 @@
     "yargs": "^16.2.0"
   },
   "dependencies": {
+    "node-port-check": "^2.0.1",
     "ws": "^8.2.3"
   }
 }
