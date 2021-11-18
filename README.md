@@ -4,7 +4,7 @@
 
 ![](./doc/feature1-1.gif)
 
-You can also set the highlight style in Setting Panel using [`userstyle.css` of Joplin](https://joplinapp.org/help/#custom-css). For example:
+You can also set the highlight style in [`userstyle.css` of Joplin](https://joplinapp.org/help/#custom-css). For example:
 
 ```css
 .better-markdown-viewer-highlight-line {
@@ -18,10 +18,13 @@ You can also set the highlight style in Setting Panel using [`userstyle.css` of 
   width: 3px;
   left: -6px;
 }
+```
 
 ![](./doc/feature1-2.gif)
 
-/* When using dark theme, the highlighted line element get an extra class name. */
+When using dark theme, the highlighted line element get an extra class name.
+
+```css
 .better-markdown-viewer-highlight-line-dark {
   background: red;
 }
