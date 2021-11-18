@@ -1,5 +1,7 @@
 # Joplin Better Markdown Viewer
 
+Discussion: https://discourse.joplinapp.org/t/plugin-keep-cursor-synced-between-editor-and-md-viewer/20928
+
 ## Feature 1: Mark the active line of editor in MD Viewer
 
 ![](./doc/feature1-1.gif)
