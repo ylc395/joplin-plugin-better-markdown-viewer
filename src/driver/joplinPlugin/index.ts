@@ -1,102 +1,114 @@
 import joplin from 'api';
-import { ContentScriptType, SettingItemType } from 'api/types';
-import { MARKDOWN_SCRIPT_ID, CODE_MIRROR_SCRIPT_ID } from '../constants';
-import type { Request as MarkdownViewerRequest } from '../markdownViewer/type';
-import type { Request as CodeMirrorRequest } from '../codeMirror/type';
-import Joplin, {
-  HIGHLIGHT_LINE_STYLE,
-  ENABLE_SYNC_TO_CM,
+import { ContentScriptType } from 'api/types';
+import {
+  MARKDOWN_SCRIPT_ID,
+  CODE_MIRROR_SCRIPT_ID,
+  QueryWsPortRequest,
+  QuerySettingRequest,
   BEHAVIOR_IN_VIEW_MODE,
-  Behaviors,
-} from './Joplin';
+  SECTION_NAME,
+} from '../constants';
+import setting, { Behaviors } from './setting';
+import { OPEN, WebSocketServer } from 'ws';
 
-const app = new Joplin();
+export default class App {
+  private port = 3000;
 
-export async function setupMarkdownViewer() {
-  await joplin.contentScripts.register(
-    ContentScriptType.MarkdownItPlugin,
-    MARKDOWN_SCRIPT_ID,
-    './driver/markdownViewer/index.js',
-  );
+  private startWs() {
+    const wss = new WebSocketServer({
+      port: this.port,
+    });
 
-  await joplin.contentScripts.onMessage(MARKDOWN_SCRIPT_ID, (request: MarkdownViewerRequest) => {
+    wss.on('connection', (ws) => {
+      ws.on('message', (message) => {
+        wss.clients.forEach((client) => {
+          if (client.readyState === OPEN) {
+            client.send(message);
+          }
+        });
+
+        const data = JSON.parse(message.toString());
+        if (data.from === 'md' && data.event === 'moveCursor') {
+          this.toggleEditorOut();
+        }
+      });
+    });
+
+    return new Promise((resolve) => wss.on('listening', resolve));
+  }
+
+  async init() {
+    await this.setupSetting();
+    await this.startWs();
+    await this.setupCodeMirror();
+    await this.setupMarkdownViewer();
+  }
+
+  private async setupMarkdownViewer() {
+    await joplin.contentScripts.register(
+      ContentScriptType.MarkdownItPlugin,
+      MARKDOWN_SCRIPT_ID,
+      './driver/markdownViewer/index.js',
+    );
+
+    await joplin.contentScripts.onMessage(MARKDOWN_SCRIPT_ID, this.handleRequest.bind(this));
+  }
+
+  private async setupCodeMirror() {
+    await joplin.contentScripts.register(
+      ContentScriptType.CodeMirrorPlugin,
+      CODE_MIRROR_SCRIPT_ID,
+      './driver/codeMirror/index.js',
+    );
+
+    await joplin.contentScripts.onMessage(CODE_MIRROR_SCRIPT_ID, this.handleRequest.bind(this));
+  }
+
+  private async setupSetting() {
+    await joplin.settings.registerSection(SECTION_NAME, {
+      label: 'Better MD Viewer',
+    });
+
+    await joplin.settings.registerSettings(setting);
+  }
+
+  private handleRequest(request: QueryWsPortRequest | QuerySettingRequest) {
     switch (request.event) {
-      case 'queryCursorLine':
-        return app.queryCursorLineForMD();
-      case 'updateCursorLine':
-        return app.handleUpdateCursorLineForMD(request.payload);
+      case 'queryWsPort':
+        return this.port;
+      case 'querySetting':
+        return request.payload.isGlobal
+          ? joplin.settings.globalValue(request.payload.key)
+          : joplin.settings.value(request.payload.key);
       default:
         break;
     }
-  });
-}
+  }
 
-export async function setupCodeMirror() {
-  await joplin.contentScripts.register(
-    ContentScriptType.CodeMirrorPlugin,
-    CODE_MIRROR_SCRIPT_ID,
-    './driver/codeMirror/index.js',
-  );
+  private async toggleEditorOut() {
+    let layouts = await joplin.settings.globalValue('noteVisiblePanes');
+    let layoutsSeq = await joplin.settings.globalValue('layoutButtonSequence');
+    const behavior: Behaviors = await joplin.settings.value(BEHAVIOR_IN_VIEW_MODE);
 
-  await joplin.contentScripts.onMessage(CODE_MIRROR_SCRIPT_ID, (request: CodeMirrorRequest) => {
-    switch (request.event) {
-      case 'updateCursorLine':
-        return app.handleUpdateCursorLineForCM(request.payload);
-      case 'queryCursorLine':
-        return app.queryCursorLineForCM();
-      default:
-        break;
+    const isInViewMode = layouts.length === 1 && layouts[0] === 'viewer';
+
+    if (!isInViewMode) {
+      return;
     }
-  });
-}
 
-export async function setupSetting() {
-  const SECTION_NAME = 'Better MD Viewer';
+    const canStopToggle = {
+      [Behaviors.None]: () => true,
+      [Behaviors.Editor]: () =>
+        (layoutsSeq === 3 && layouts.length === 2) || // @see https://github.com/laurent22/joplin/blob/cbfc646745f2774fbe89e30c8020cfe5e6465545/packages/lib/models/Setting.ts#L155
+        (layouts.length === 1 && layouts[0] === 'editor'),
+      [Behaviors.EditorView]: () =>
+        (layoutsSeq === 1 && layouts.length === 1 && layouts[0] === 'editor') || // @see https://github.com/laurent22/joplin/blob/cbfc646745f2774fbe89e30c8020cfe5e6465545/packages/lib/models/Setting.ts#L155
+        layouts.length === 2,
+    }[behavior];
 
-  await joplin.settings.registerSection(SECTION_NAME, {
-    label: 'Better MD Viewer',
-  });
-
-  await joplin.settings.registerSettings({
-    [HIGHLIGHT_LINE_STYLE]: {
-      label: 'Highlight Current Line Style',
-      type: SettingItemType.String,
-      public: true,
-      value: '& {background: #FDFFBC}',
-      section: SECTION_NAME,
-      description:
-        'CSS statements for highlight current line. Use `&` to represent the selector of highlight line. For example: `& {background: yellow}` will make highlight line yellow. Left empty to disable highlighting',
-    },
-    [ENABLE_SYNC_TO_CM]: {
-      label: 'Double click to Switch To Editor when in Split View layout',
-      type: SettingItemType.Bool,
-      public: true,
-      value: true,
-      section: SECTION_NAME,
-    },
-    [BEHAVIOR_IN_VIEW_MODE]: {
-      label: 'What happen when double clicking In View layout',
-      isEnum: true,
-      options: {
-        [Behaviors.None]: 'Nothing happens',
-        [Behaviors.Editor]: 'Toggle out Editor',
-        [Behaviors.EditorView]: 'Toggle out Editor-View',
-      },
-      type: SettingItemType.Int,
-      public: true,
-      value: Behaviors.EditorView,
-      section: SECTION_NAME,
-      description: 'Actual Effect depends on your layout button sequence setting',
-    },
-  });
-
-  app.update(HIGHLIGHT_LINE_STYLE, await joplin.settings.value(HIGHLIGHT_LINE_STYLE));
-  app.update(ENABLE_SYNC_TO_CM, await joplin.settings.value(ENABLE_SYNC_TO_CM));
-  app.update(BEHAVIOR_IN_VIEW_MODE, await joplin.settings.value(BEHAVIOR_IN_VIEW_MODE));
-
-  await joplin.settings.onChange(async ({ keys }) => {
-    for (const key of keys) {
-      app.update(key, await joplin.settings.value(key));
+    while (!canStopToggle()) {
+      await joplin.commands.execute('toggleVisiblePanes');
+      layouts = await joplin.settings.globalValue('noteVisiblePanes');
     }
-  });
+  }
 }

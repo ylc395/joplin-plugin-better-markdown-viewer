@@ -2,7 +2,7 @@ import type MarkdownIt from 'markdown-it';
 import type { RenderRule } from 'markdown-it/lib/renderer';
 
 // @from https://github.com/microsoft/vscode/blob/b1823157d5450eb44297871a93a3280fa71b4f0b/extensions/markdown-language-features/src/markdownEngine.ts#L197
-export function sourceMap(md: MarkdownIt) {
+function sourceMap(md: MarkdownIt) {
   const rules = [
     'paragraph_open',
     'heading_open',
@@ -33,13 +33,11 @@ export function sourceMap(md: MarkdownIt) {
   }
 }
 
-module.exports = {
-  default: function (context: unknown) {
-    return {
-      plugin: sourceMap,
-      assets: function () {
-        return [{ name: 'highlightLine.js' }, { name: 'syncCursor.js' }];
-      },
-    };
-  },
-};
+export default function () {
+  return {
+    plugin: sourceMap,
+    assets: function () {
+      return [{ name: 'webview/index.js' }, { name: 'webview/style.css' }];
+    },
+  };
+}

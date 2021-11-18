@@ -79,6 +79,11 @@
   resolved "https://registry.npmjs.org/@types/mdurl/-/mdurl-1.0.2.tgz#e2ce9d83a613bacf284c7be7d491945e39e1f8e9"
   integrity sha512-eC4U9MlIcu2q0KQmXszyn5Akca/0jrQmwDRgpAMJai7qBWq4amIQhZyNau4VYGtCeALvW1/NtjzJJ567aZxfKA==
 
+"@types/node@*":
+  version "16.11.7"
+  resolved "https://registry.npmjs.org/@types/node/-/node-16.11.7.tgz#36820945061326978c42a01e56b61cd223dfdc42"
+  integrity sha512-QB5D2sqfSjCmTuWcBWyJ+/44bcjO7VbjSbOE0ucoVbAsSNQc4Lt6QkgkVXkTDwkL4z/beecZNDvVX15D4P8Jbw==
+
 "@types/node@^14.0.14":
   version "14.17.21"
   resolved "https://registry.npmjs.org/@types/node/-/node-14.17.21.tgz#6359d8cf73481e312a43886fa50afc70ce5592c6"
@@ -90,6 +95,13 @@
   integrity sha512-JAUw1iXGO1qaWwEOzxTKJZ/5JxVeON9kvGZ/osgZaJImBnyjyn0cjovPsf6FNLmyGY8Vw9DoXZCMlfMkMwHRWg==
   dependencies:
     "@types/estree" "*"
+
+"@types/ws@^8.2.0":
+  version "8.2.0"
+  resolved "https://registry.npmjs.org/@types/ws/-/ws-8.2.0.tgz#75faefbe2328f3b833cb8dc640658328990d04f3"
+  integrity sha512-cyeefcUCgJlEk+hk2h3N+MqKKsPViQgF5boi9TTHSK+PoR9KWBb/C5ccPcDyAqgsbAYHTwulch725DV84+pSpg==
+  dependencies:
+    "@types/node" "*"
 
 "@webassemblyjs/ast@1.9.0":
   version "1.9.0"
@@ -3184,6 +3196,11 @@ wrappy@1:
   version "1.0.2"
   resolved "https://registry.npmjs.org/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
   integrity sha1-tSQ9jz7BqjXxNkYFvA0QNuMKtp8=
+
+ws@^8.2.3:
+  version "8.2.3"
+  resolved "https://registry.npmjs.org/ws/-/ws-8.2.3.tgz#63a56456db1b04367d0b721a0b80cae6d8becbba"
+  integrity sha512-wBuoj1BDpC6ZQ1B7DWQBYVLphPWkm8i9Y0/3YdHjHKHiohOJ1ws+3OccDWtH+PoC9DZD5WOTrJvNbWvjS6JWaA==
 
 xtend@^4.0.0, xtend@~4.0.1:
   version "4.0.2"

@@ -1,8 +1,7 @@
 {
   "extraScripts": [
     "driver/markdownViewer/index.ts",
-    "driver/markdownViewer/highlightLine.ts",
-    "driver/markdownViewer/syncCursor.ts",
+    "driver/markdownViewer/webview/index.ts",
     "driver/codeMirror/index.ts"
   ]
 }

@@ -6,13 +6,13 @@ All features can be enabled/disabled in Setting Panel.
 
 ![](./doc/feature1-1.gif)
 
-You can also set the highlight style in Setting Panel. For example:
+You can also set the highlight style in Setting Panel using [`userstyle.css` of Joplin](https://joplinapp.org/help/#custom-css). For example:
 
 ```css
-& {
+.better-markdown-viewer-highlight-line {
   position: relative;
 }
-&::before {
+.better-markdown-viewer-highlight-line::before {
   position: absolute;
   background-color: rgba(255, 255, 255, 0.4);
   content: '';
@@ -20,9 +20,14 @@ You can also set the highlight style in Setting Panel. For example:
   width: 3px;
   left: -6px;
 }
-```
 
 ![](./doc/feature1-2.gif)
+
+/* When using dark theme, the highlighted line element get an extra class name. */
+.better-markdown-viewer-highlight-line-dark {
+  background: red;
+}
+```
 
 ## Feature 2: Focus the same line in editor when double click MD Viewer
 

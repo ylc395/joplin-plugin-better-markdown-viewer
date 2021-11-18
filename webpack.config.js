@@ -135,6 +135,7 @@ function onBuildCompleted() {
 }
 
 const baseConfig = {
+  devtool: 'inline-source-map',
   mode: 'production',
   target: 'node',
   stats: 'errors-only',
@@ -196,6 +197,7 @@ const extraScriptConfig = Object.assign({}, baseConfig, {
 const createArchiveConfig = {
   stats: 'errors-only',
   entry: './dist/index.js',
+  target: 'node',
   output: {
     filename: 'index.js',
     path: publishDir,
@@ -213,13 +215,16 @@ function resolveExtraScriptPath(name) {
   const s = name.split('.');
   s.pop();
   const nameNoExt = s.join('.');
+  const isWebview = nameNoExt.includes('webview');
+  const target = isWebview ? 'web' : 'node';
 
   return {
+    target,
     entry: relativePath,
     output: {
       filename: `${nameNoExt}.js`,
       path: distDir,
-      ...(nameNoExt.endsWith('index')
+      ...(!isWebview
         ? {
             library: 'default',
             libraryTarget: 'commonjs',
@@ -239,6 +244,7 @@ function buildExtraScriptConfigs(userConfig) {
     const scriptPaths = resolveExtraScriptPath(scriptName);
     output.push(
       Object.assign({}, extraScriptConfig, {
+        target: scriptPaths.target,
         entry: scriptPaths.entry,
         output: scriptPaths.output,
       }),
