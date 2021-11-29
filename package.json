@@ -1,6 +1,6 @@
 {
   "name": "joplin-plugin-better-markdown-viewer",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "scripts": {
     "dist": "webpack --joplin-plugin-config buildMain && webpack --joplin-plugin-config buildExtraScripts && webpack --joplin-plugin-config createArchive",
     "prepare": "npm run dist",
