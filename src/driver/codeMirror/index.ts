@@ -10,19 +10,19 @@ let ws: WebSocket | undefined;
 
 class Cursor {
   constructor(private readonly context: Context, private readonly cm: Editor) {
-    if (ws) {
-      ws.close();
-      ws.onmessage = null;
-    }
-
     this.init();
   }
   private currentLine: number | null = null;
   private readonly doc = this.cm.getDoc();
-  private ws?: WebSocket;
+  private ws = ws;
   private async init() {
-    const port = await this.context.postMessage<number>({ event: 'queryWsPort' });
-    this.ws = ws = new WebSocket(`ws://127.0.0.1:${port}`);
+    if (this.ws) {
+      this.ws.onmessage = null;
+    } else {
+      const port = await this.context.postMessage<number>({ event: 'queryWsPort' });
+      this.ws = ws = new WebSocket(`ws://127.0.0.1:${port}`);
+    }
+
     this.ws.onmessage = async (e) => {
       const data = JSON.parse(await e.data.text());
       this.handleWsMessage(data);
