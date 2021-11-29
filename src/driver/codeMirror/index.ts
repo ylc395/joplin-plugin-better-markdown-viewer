@@ -6,8 +6,15 @@ interface Context {
   postMessage: <T>(request: QueryWsPortRequest) => Promise<T>;
 }
 
+let ws: WebSocket | undefined;
+
 class Cursor {
   constructor(private readonly context: Context, private readonly cm: Editor) {
+    if (ws) {
+      ws.close();
+      ws.onmessage = null;
+    }
+
     this.init();
   }
   private currentLine: number | null = null;
@@ -15,11 +22,11 @@ class Cursor {
   private ws?: WebSocket;
   private async init() {
     const port = await this.context.postMessage<number>({ event: 'queryWsPort' });
-    this.ws = new WebSocket(`ws://127.0.0.1:${port}`);
-    this.ws.addEventListener('message', async (e) => {
+    this.ws = ws = new WebSocket(`ws://127.0.0.1:${port}`);
+    this.ws.onmessage = async (e) => {
       const data = JSON.parse(await e.data.text());
       this.handleWsMessage(data);
-    });
+    };
   }
 
   private handleWsMessage(data: WsMessage) {
