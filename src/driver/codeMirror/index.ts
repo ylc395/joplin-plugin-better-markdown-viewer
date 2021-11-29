@@ -16,9 +16,7 @@ class Cursor {
   private readonly doc = this.cm.getDoc();
   private ws = ws;
   private async init() {
-    if (this.ws) {
-      this.ws.onmessage = null;
-    } else {
+    if (!this.ws) {
       const port = await this.context.postMessage<number>({ event: 'queryWsPort' });
       this.ws = ws = new WebSocket(`ws://127.0.0.1:${port}`);
     }
