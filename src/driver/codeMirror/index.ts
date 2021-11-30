@@ -18,6 +18,12 @@ class Cursor {
   private async init() {
     if (!this.ws) {
       const port = await this.context.postMessage<number>({ event: 'queryWsPort' });
+
+      if (!port) {
+        setTimeout(this.init.bind(this), 500);
+        return;
+      }
+
       this.ws = ws = new WebSocket(`ws://127.0.0.1:${port}`);
     }
 
