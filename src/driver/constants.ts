@@ -16,5 +16,5 @@ export interface WsMessage {
   payload: Record<string, any>;
 }
 
-export const SECTION_NAME = 'Better MD Viewer';
+export const SECTION_NAME = 'Cursor Sync';
 export const BEHAVIOR_IN_VIEW_MODE = 'behaviorInViewMode';

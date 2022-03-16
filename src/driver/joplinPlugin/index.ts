@@ -64,7 +64,7 @@ export default class App {
 
   private async setupSetting() {
     await joplin.settings.registerSection(SECTION_NAME, {
-      label: 'Better MD Viewer',
+      label: 'Cursor Sync',
     });
 
     await joplin.settings.registerSettings(setting);
