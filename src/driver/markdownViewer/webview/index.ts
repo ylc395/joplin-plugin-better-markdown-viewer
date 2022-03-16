@@ -51,6 +51,11 @@ class MarkdownView {
   private monitorDblclick() {
     document.addEventListener('dblclick', (e) => {
       const line = getLine(e.target as HTMLElement);
+
+      if (!line) {
+        return;
+      }
+
       this.ws?.send(
         JSON.stringify({
           from: 'md',
