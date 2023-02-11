@@ -1,5 +1,5 @@
 import { SettingItem, SettingItemType } from 'api/types';
-import { BEHAVIOR_IN_VIEW_MODE, SECTION_NAME } from '../constants';
+import { BEHAVIOR_IN_VIEW_MODE, DEFAULT_PORT, PORT, SECTION_NAME } from '../constants';
 
 export enum Behaviors {
   None,
@@ -21,6 +21,14 @@ const setting: Record<string, SettingItem> = {
     value: Behaviors.EditorView,
     section: SECTION_NAME,
     description: 'Actual Effect depends on your layout button sequence setting',
+  },
+  [PORT]: {
+    label: 'Port',
+    type: SettingItemType.Int,
+    public: true,
+    value: DEFAULT_PORT,
+    section: SECTION_NAME,
+    description: 'This plugin will open a port to enable the communication between editor and previewer. Restart Joplin to take effect.',
   },
 };
 

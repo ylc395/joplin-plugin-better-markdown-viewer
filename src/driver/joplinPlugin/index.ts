@@ -6,17 +6,20 @@ import {
   QueryWsPortRequest,
   QuerySettingRequest,
   BEHAVIOR_IN_VIEW_MODE,
+  PORT,
   SECTION_NAME,
+  DEFAULT_PORT,
 } from '../constants';
 import setting, { Behaviors } from './setting';
 import { nextAvailable } from 'node-port-check';
 import { OPEN, WebSocketServer } from 'ws';
 
 export default class App {
-  private port = 3000;
+  private port = DEFAULT_PORT;
 
   private async startWs() {
-    this.port = await nextAvailable(this.port);
+    const port =  await joplin.settings.value(PORT)
+    this.port = await nextAvailable(port);
     const wss = new WebSocketServer({ port: this.port });
 
     wss.on('connection', (ws) => {
